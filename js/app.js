@@ -21,6 +21,8 @@ function initApp() {
   if (!DB.isOnboarded()) {
     showOnboarding();
   } else {
+    document.getElementById('onboarding').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
     loadDashboard();
   }
   setupNav();
