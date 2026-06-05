@@ -2,7 +2,7 @@
   "name": "AstroChance",
   "short_name": "AstroChance",
   "description": "Vos heures de chance personnalisées selon l'astrologie",
-  "start_url": "/index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0c1a",
   "theme_color": "#d4af37",

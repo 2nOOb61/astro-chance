@@ -12,7 +12,7 @@ let lastNotifDay = null;
 // ---- INIT ----
 function initApp() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
   document.querySelectorAll('#ob-birthdate, #pf-birthdate').forEach(el => {
     el.max = new Date().toISOString().split('T')[0];
@@ -315,11 +315,11 @@ function checkNotifications() {
     const keyStart = `start-${h.startSec}`;
     if (prefs.before15 && diff > 840 && diff <= 900 && !sentNotifs.has(key15)) {
       sentNotifs.add(key15);
-      try { new Notification('⏰ AstroChance', { body: `Dans 15 min : heure ${h.planetName} (score ${h.score}). Activité conseillée : ${h.activity}`, icon: '/icons/icon-192.png' }); } catch(e) {}
+      try { new Notification('⏰ AstroChance', { body: `Dans 15 min : heure ${h.planetName} (score ${h.score}). Activité conseillée : ${h.activity}`, icon: 'icons/icon-192.png' }); } catch(e) {}
     }
     if (prefs.onStart && diff > -60 && diff <= 0 && !sentNotifs.has(keyStart)) {
       sentNotifs.add(keyStart);
-      try { new Notification(`${h.planetSym} Heure favorable!`, { body: `${h.planetName} commence — ${h.activity}. Score : ${h.score}/100`, icon: '/icons/icon-192.png' }); } catch(e) {}
+      try { new Notification(`${h.planetSym} Heure favorable!`, { body: `${h.planetName} commence — ${h.activity}. Score : ${h.score}/100`, icon: 'icons/icon-192.png' }); } catch(e) {}
     }
   });
 }
