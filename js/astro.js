@@ -243,6 +243,7 @@ function computeLuckyHours(userProfile, date) {
       start: secondsToHHMM(h.start),
       end:   secondsToHHMM(h.end),
       startSec: h.start,
+      endSec: h.end,
       planet: h.planet,
       planetName: planet.name,
       planetSym:  planet.sym,

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'astro-chance-v1';
+const CACHE_NAME = 'astro-chance-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -6,7 +6,9 @@ const ASSETS = [
   '/js/astro.js',
   '/js/app.js',
   '/js/db.js',
-  '/manifest.json'
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
 ];
 
 self.addEventListener('install', e => {

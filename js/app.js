@@ -6,12 +6,18 @@ let currentView = 'dashboard';
 let todayScores = null;
 let luckyHours  = [];
 let notifTimer  = null;
+const sentNotifs = new Set();
+let lastNotifDay = null;
 
 // ---- INIT ----
 function initApp() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
+  document.querySelectorAll('#ob-birthdate, #pf-birthdate').forEach(el => {
+    el.max = new Date().toISOString().split('T')[0];
+  });
+  window.addEventListener('beforeunload', () => { if (notifTimer) clearInterval(notifTimer); });
   if (!DB.isOnboarded()) {
     showOnboarding();
   } else {
@@ -51,7 +57,7 @@ function showOnboarding() {
   document.getElementById('onboarding').style.display = 'flex';
   document.getElementById('main-app').style.display = 'none';
 
-  document.getElementById('btn-save-profile').addEventListener('click', () => {
+  document.getElementById('btn-save-profile').onclick = () => {
     const name      = document.getElementById('ob-name').value.trim();
     const birthDate = document.getElementById('ob-birthdate').value;
     const birthTime = document.getElementById('ob-birthtime').value;
@@ -68,7 +74,7 @@ function showOnboarding() {
     document.getElementById('onboarding').style.display = 'none';
     document.getElementById('main-app').style.display = 'flex';
     loadDashboard();
-  });
+  };
 }
 
 // ---- DONNÉES ----
@@ -76,7 +82,7 @@ function loadDashboard() {
   const profile = DB.getProfile();
   if (!profile) return;
   const today = new Date();
-  const dateKey = today.toISOString().split('T')[0];
+  const dateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   let scores = DB.getDayScore(dateKey);
   if (!scores) {
     scores = AstroEngine.computeDayScores(profile, today);
@@ -167,8 +173,9 @@ function renderHours(filter) {
   const container = document.getElementById('hours-list');
   if (!container) return;
   container.innerHTML = hours.map(h => {
-    const isCurrent = h.startSec <= now && h.startSec + 3600 > now;
-    const isPast = h.startSec + 3600 < now;
+    const isWrap = h.endSec < h.startSec;
+    const isCurrent = isWrap ? (now >= h.startSec || now < h.endSec) : (now >= h.startSec && now < h.endSec);
+    const isPast = isWrap ? (now >= h.endSec && now < h.startSec) : now >= h.endSec;
     return `
     <div class="hour-card ${isCurrent ? 'current' : ''} ${isPast ? 'past' : ''}" onclick="openRating('${h.start}','${h.planetName}',${h.score})">
       <div class="hc-left">
@@ -194,7 +201,7 @@ function openRating(hourKey, planet, score) {
   modal.dataset.hourKey = hourKey;
   let selected = 3;
   modal.querySelectorAll('.rm-star').forEach((s, i) => {
-    s.addEventListener('click', () => { selected = i + 1; updateStars(modal, selected); });
+    s.onclick = () => { selected = i + 1; updateStars(modal, selected); };
   });
   updateStars(modal, selected);
   modal.querySelector('.rm-btn-save').onclick = () => {
@@ -216,6 +223,10 @@ function updateStars(modal, val) {
 }
 
 // ---- HISTORIQUE ----
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function renderHistory() {
   const history = DB.getHistory();
   const container = document.getElementById('history-list');
@@ -229,9 +240,9 @@ function renderHistory() {
   container.innerHTML = history.map(e => `
     <div class="history-card">
       <div class="hh-left">
-        <div class="hh-title">${e.title || 'Activité'}</div>
+        <div class="hh-title">${escapeHtml(e.title || 'Activité')}</div>
         <div class="hh-date">${new Date(e.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
-        ${e.note ? `<div class="hh-note">${e.note}</div>` : ''}
+        ${e.note ? `<div class="hh-note">${escapeHtml(e.note)}</div>` : ''}
       </div>
       <div class="hh-right">
         ${e.rating ? `<div class="hh-rating" style="color:${rColors[e.rating]}">${ratings[e.rating]}</div>` : ''}
@@ -275,8 +286,8 @@ function saveProfile() {
   const birthTime = document.getElementById('pf-birthtime').value;
   const city      = document.getElementById('pf-city').value.trim();
   if (!name || !birthDate) { showToast('Nom et date requis', 'warn'); return; }
-  const coords = CITY_COORDS[city.toLowerCase()] || { lat: -18.91, lon: 47.53 };
-  DB.saveProfile({ name, birthDate, birthTime, city, lat: coords.lat, lon: coords.lon });
+  const coords = CITY_COORDS[city.toLowerCase()] || { lat: -18.91, lon: 47.53, tz: 'Indian/Antananarivo' };
+  DB.saveProfile({ name, birthDate, birthTime, city, lat: coords.lat, lon: coords.lon, tz: coords.tz });
   loadDashboard();
   showToast('Profil sauvegardé ✦', 'success');
 }
@@ -293,16 +304,22 @@ function setupNotifications() {
 function checkNotifications() {
   if (Notification.permission !== 'granted') return;
   const now = new Date();
+  const today = now.toDateString();
+  if (today !== lastNotifDay) { sentNotifs.clear(); lastNotifDay = today; }
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60;
   const prefs = DB.getNotifPrefs();
   luckyHours.forEach(h => {
     if (h.score < 70) return;
     const diff = h.startSec - nowSec;
-    if (prefs.before15 && diff > 840 && diff <= 900) {
-      new Notification('⏰ AstroChance', { body: `Dans 15 min : heure ${h.planetName} (score ${h.score}). Activité conseillée : ${h.activity}`, icon: '/icons/icon-192.png' });
+    const key15 = `15m-${h.startSec}`;
+    const keyStart = `start-${h.startSec}`;
+    if (prefs.before15 && diff > 840 && diff <= 900 && !sentNotifs.has(key15)) {
+      sentNotifs.add(key15);
+      try { new Notification('⏰ AstroChance', { body: `Dans 15 min : heure ${h.planetName} (score ${h.score}). Activité conseillée : ${h.activity}`, icon: '/icons/icon-192.png' }); } catch(e) {}
     }
-    if (prefs.onStart && diff > -60 && diff <= 0) {
-      new Notification(`${h.planetSym} Heure favorable!`, { body: `${h.planetName} commence — ${h.activity}. Score : ${h.score}/100`, icon: '/icons/icon-192.png' });
+    if (prefs.onStart && diff > -60 && diff <= 0 && !sentNotifs.has(keyStart)) {
+      sentNotifs.add(keyStart);
+      try { new Notification(`${h.planetSym} Heure favorable!`, { body: `${h.planetName} commence — ${h.activity}. Score : ${h.score}/100`, icon: '/icons/icon-192.png' }); } catch(e) {}
     }
   });
 }
