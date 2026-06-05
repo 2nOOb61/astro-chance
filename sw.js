@@ -1,4 +1,4 @@
-const CACHE_NAME = 'astro-chance-v2';
+const CACHE_NAME = 'astro-chance-v3';
 const ASSETS = [
   './',
   './index.html',
