@@ -18,29 +18,32 @@
 
 <!-- ✦ ONBOARDING ✦ -->
 <div id="onboarding">
-  <div class="ob-card">
-    <div class="ob-glyph">✦</div>
-    <div class="ob-title cinzel">AstroChance</div>
-    <div class="ob-sub">Découvrez vos heures de chance personnalisées. Entrez vos données de naissance pour commencer votre voyage astral.</div>
+  <div class="ob-scroll">
+    <div class="ob-card">
+      <div class="ob-glyph">✦</div>
+      <div class="ob-title cinzel">AstroChance</div>
+      <div class="ob-sub">Découvrez vos heures de chance personnalisées. Entrez vos données de naissance pour commencer votre voyage astral.</div>
 
-    <div class="ob-field">
-      <label>Votre prénom</label>
-      <input type="text" id="ob-name" placeholder="Ex : Gino" autocomplete="given-name">
+      <div class="ob-field">
+        <label>Votre prénom</label>
+        <input type="text" id="ob-name" placeholder="Ex : Gino" autocomplete="given-name">
+      </div>
+      <div class="ob-field">
+        <label>Date de naissance</label>
+        <input type="date" id="ob-birthdate">
+      </div>
+      <div class="ob-field">
+        <label>Heure de naissance <span style="opacity:.5">(optionnel)</span></label>
+        <input type="time" id="ob-birthtime">
+      </div>
+      <div class="ob-field">
+        <label>Ville de naissance</label>
+        <input type="text" id="ob-city" placeholder="Ex : Antananarivo, Paris…">
+        <div class="hint">Pour le calcul précis du lever/coucher du soleil</div>
+      </div>
     </div>
-    <div class="ob-field">
-      <label>Date de naissance</label>
-      <input type="date" id="ob-birthdate">
-    </div>
-    <div class="ob-field">
-      <label>Heure de naissance <span style="opacity:.5">(optionnel)</span></label>
-      <input type="time" id="ob-birthtime">
-    </div>
-    <div class="ob-field">
-      <label>Ville de naissance</label>
-      <input type="text" id="ob-city" placeholder="Ex : Antananarivo, Paris…">
-      <div class="hint">Pour le calcul précis du lever/coucher du soleil</div>
-    </div>
-
+  </div>
+  <div class="ob-footer">
     <button type="button" class="ob-btn cinzel" id="btn-save-profile">✦ RÉVÉLER MON THÈME ✦</button>
   </div>
 </div>

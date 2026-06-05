@@ -38,9 +38,22 @@ html, body {
 #onboarding {
   position: fixed; inset: 0;
   background: linear-gradient(160deg, #070910 0%, #0c1020 60%, #080e1a 100%);
-  display: flex; align-items: flex-start; justify-content: center;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  z-index: 100; padding: 20px;
+  display: flex; flex-direction: column;
+  z-index: 100;
+}
+
+.ob-scroll {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 20px 20px 0;
+}
+
+.ob-footer {
+  flex-shrink: 0;
+  padding: 12px 24px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  background: linear-gradient(to top, #070910 80%, transparent);
+  border-top: 1px solid rgba(212,175,55,0.08);
 }
 
 .ob-card {
@@ -48,7 +61,7 @@ html, body {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(212,175,55,0.2);
   border-radius: 20px;
-  padding: 32px 24px;
+  padding: 32px 24px 20px;
   text-align: center;
 }
 
@@ -72,7 +85,7 @@ html, body {
 .ob-field .hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
 
 .ob-btn {
-  width: 100%; margin-top: 8px;
+  width: 100%; margin-top: 0;
   background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.08));
   border: 1px solid var(--gold-border);
   color: var(--gold); font-family: 'Cinzel', serif;
