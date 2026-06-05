@@ -85,6 +85,17 @@
         </div>
       </div>
 
+      <!-- Guide rapide -->
+      <details class="quick-guide">
+        <summary class="qg-summary">✦ Comment utiliser AstroChance ?</summary>
+        <div class="qg-steps">
+          <div class="qg-step"><span class="qg-num">1</span><span>Consultez votre <strong>score du jour</strong> — il reflète vos énergies selon votre thème natal</span></div>
+          <div class="qg-step"><span class="qg-num">2</span><span>Allez sur <strong>Heures</strong> pour voir vos moments les plus favorables</span></div>
+          <div class="qg-step"><span class="qg-num">3</span><span>Planifiez vos activités importantes pendant les heures à <strong>fort score</strong></span></div>
+          <div class="qg-step"><span class="qg-num">4</span><span>Après une heure vécue, <strong>appuyez dessus et donnez des étoiles</strong> — l'app apprend de vous et s'améliore</span></div>
+        </div>
+      </details>
+
       <!-- Domaines -->
       <div class="domain-grid">
         <div class="domain-card">
@@ -115,6 +126,7 @@
 
       <!-- Meilleure heure du jour -->
       <div class="section-title">✦ Meilleure heure aujourd'hui</div>
+      <div class="section-sub">L'heure planétaire la plus propice — idéale pour vos décisions importantes</div>
       <div class="best-hour-card">
         <div class="bh-glyph">⭐</div>
         <div>
@@ -126,6 +138,7 @@
 
       <!-- Prochaine heure -->
       <div class="section-title">⏰ Prochaine heure favorable</div>
+      <div class="section-sub">Préparez-vous à l'avance pour en tirer le meilleur parti</div>
       <div class="next-hour-card">
         <span style="font-size:18px">🔔</span>
         <div>
@@ -136,6 +149,7 @@
 
       <!-- Lune -->
       <div class="section-title">☽ Lune du jour</div>
+      <div class="section-sub">La phase lunaire influence vos émotions et votre intuition</div>
       <div class="moon-card" id="db-moon">—</div>
 
       <div style="height:20px"></div>
@@ -151,6 +165,7 @@
         <button class="filter-btn" onclick="filterHours('day',this)">☀ Jour</button>
         <button class="filter-btn" onclick="filterHours('top',this)">⭐ Score 70+</button>
       </div>
+      <div class="hours-hint">Appuyez sur une heure pour la noter avec des étoiles après l'avoir vécue — plus vous notez, plus vos prédictions s'améliorent</div>
       <div id="hours-list">
         <div class="empty-state">Chargement des heures…</div>
       </div>

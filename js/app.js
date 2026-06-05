@@ -232,7 +232,16 @@ function renderHistory() {
   const container = document.getElementById('history-list');
   if (!container) return;
   if (history.length === 0) {
-    container.innerHTML = '<div class="empty-state">✦ Aucune activité enregistrée.<br>Notez vos heures pour affiner vos prédictions.</div>';
+    container.innerHTML = `<div class="empty-state">
+      <div class="es-title">✦ Aucune activité enregistrée</div>
+      <div class="es-steps">
+        <div class="es-step">① Allez sur l'onglet <strong>Heures</strong></div>
+        <div class="es-step">② Choisissez une heure favorable à fort score</div>
+        <div class="es-step">③ Réalisez votre activité pendant cette heure</div>
+        <div class="es-step">④ Revenez et appuyez sur cette heure pour la noter ★</div>
+      </div>
+      <div class="es-note">Chaque notation aide l'app à mieux vous connaître et à affiner vos prédictions.</div>
+    </div>`;
     return;
   }
   const ratings = ['', '★ Très mauvais', '★★ Mauvais', '★★★ Moyen', '★★★★ Bon', '★★★★★ Excellent'];
@@ -269,11 +278,14 @@ function renderProfile() {
   document.getElementById('pf-birthdate').value = p.birthDate || '';
   document.getElementById('pf-birthtime').value = p.birthTime || '';
   document.getElementById('pf-city').value = p.city || '';
+  const weight = DB.getPersonalWeight();
+  const weightLabel = weight < 65 ? 'Continuez à noter vos heures pour améliorer ce score' : weight < 80 ? 'Bon niveau — continuez à noter régulièrement' : 'Excellent — vos prédictions sont très personnalisées';
   document.getElementById('pf-stats').innerHTML = `
     <div class="stat-row"><span>Activités enregistrées</span><span>${history.length}</span></div>
-    <div class="stat-row"><span>Notations</span><span>${ratings.length}</span></div>
-    <div class="stat-row"><span>Note moyenne</span><span>${avgRating} ★</span></div>
-    <div class="stat-row"><span>Précision IA</span><span>${DB.getPersonalWeight()}%</span></div>
+    <div class="stat-row"><span>Notations d'heures</span><span>${ratings.length}</span></div>
+    <div class="stat-row"><span>Note moyenne donnée</span><span>${avgRating} ★</span></div>
+    <div class="stat-row stat-row-col"><span>Précision IA</span><span class="stat-val-big">${weight}%</span></div>
+    <div class="stat-hint">${weightLabel}</div>
   `;
 
   const sign = p.birthDate ? AstroEngine.sunSign(new Date(p.birthDate)) : null;
