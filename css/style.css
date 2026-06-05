@@ -38,7 +38,8 @@ html, body {
 #onboarding {
   position: fixed; inset: 0;
   background: linear-gradient(160deg, #070910 0%, #0c1020 60%, #080e1a 100%);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
   z-index: 100; padding: 20px;
 }
 
@@ -78,6 +79,8 @@ html, body {
   font-size: 13px; letter-spacing: 2px;
   padding: 14px; border-radius: var(--radius-sm);
   cursor: pointer; transition: all 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(212,175,55,0.2);
 }
 .ob-btn:hover { background: rgba(212,175,55,0.2); }
 
