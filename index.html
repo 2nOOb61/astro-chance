@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#d4af37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AstroChance">
+  <meta name="description" content="Vos heures de chance personnalisées selon l'astrologie">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>AstroChance ✦</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ✦ ONBOARDING ✦ -->
+<div id="onboarding">
+  <div class="ob-card">
+    <div class="ob-glyph">✦</div>
+    <div class="ob-title cinzel">AstroChance</div>
+    <div class="ob-sub">Découvrez vos heures de chance personnalisées. Entrez vos données de naissance pour commencer votre voyage astral.</div>
+
+    <div class="ob-field">
+      <label>Votre prénom</label>
+      <input type="text" id="ob-name" placeholder="Ex : Gino" autocomplete="given-name">
+    </div>
+    <div class="ob-field">
+      <label>Date de naissance</label>
+      <input type="date" id="ob-birthdate" max="2010-01-01">
+    </div>
+    <div class="ob-field">
+      <label>Heure de naissance <span style="opacity:.5">(optionnel)</span></label>
+      <input type="time" id="ob-birthtime">
+    </div>
+    <div class="ob-field">
+      <label>Ville de naissance</label>
+      <input type="text" id="ob-city" placeholder="Ex : Antananarivo, Paris…">
+      <div class="hint">Pour le calcul précis du lever/coucher du soleil</div>
+    </div>
+
+    <button class="ob-btn cinzel" id="btn-save-profile">✦ RÉVÉLER MON THÈME ✦</button>
+  </div>
+</div>
+
+<!-- ✦ MAIN APP ✦ -->
+<div id="main-app" style="display:none; flex-direction:column; height:100%;">
+
+  <div class="stars-bg"></div>
+
+  <!-- Install Banner -->
+  <div id="install-banner">
+    <span>✦ Installer AstroChance sur votre écran d'accueil</span>
+    <button onclick="installApp()">Installer</button>
+  </div>
+
+  <!-- Views -->
+  <div class="views-container">
+
+    <!-- DASHBOARD -->
+    <div id="view-dashboard" class="view active">
+      <div class="db-header">
+        <div class="db-date" id="db-date">—</div>
+        <div class="db-ruler" id="db-day-ruler">—</div>
+        <div class="db-user cinzel" id="db-user-name">—</div>
+      </div>
+
+      <!-- Score Hero -->
+      <div class="hero-card">
+        <div class="score-ring">
+          <svg width="90" height="90" viewBox="0 0 128 128">
+            <circle cx="64" cy="64" r="54" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="7"/>
+            <circle id="score-arc" cx="64" cy="64" r="54" fill="none" stroke="#d4af37" stroke-width="7" stroke-linecap="round"/>
+            <text x="64" y="58" text-anchor="middle" font-family="Cinzel,serif" font-size="26" fill="#d4af37" font-weight="600" id="db-score-val">—</text>
+            <text x="64" y="76" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="#8899bb" letter-spacing="1">/100</text>
+          </svg>
+        </div>
+        <div class="hero-info">
+          <div class="dc-label">Score de chance</div>
+          <div class="hero-score" id="db-score-label">—</div>
+          <div class="hero-desc" id="db-advice">Chargement…</div>
+          <div class="planet-badge" id="db-planet-badge">—</div>
+        </div>
+      </div>
+
+      <!-- Domaines -->
+      <div class="domain-grid">
+        <div class="domain-card">
+          <div class="dc-icon">💰</div>
+          <div class="dc-label">Argent</div>
+          <div class="dc-score" id="db-money">—</div>
+          <div class="dc-bar"><div class="dc-fill" id="bar-money" style="width:0%"></div></div>
+        </div>
+        <div class="domain-card">
+          <div class="dc-icon">💗</div>
+          <div class="dc-label">Amour</div>
+          <div class="dc-score" id="db-love">—</div>
+          <div class="dc-bar"><div class="dc-fill" id="bar-love" style="width:0%"></div></div>
+        </div>
+        <div class="domain-card">
+          <div class="dc-icon">⚡</div>
+          <div class="dc-label">Travail</div>
+          <div class="dc-score" id="db-work">—</div>
+          <div class="dc-bar"><div class="dc-fill" id="bar-work" style="width:0%"></div></div>
+        </div>
+        <div class="domain-card">
+          <div class="dc-icon">🔮</div>
+          <div class="dc-label">Esprit</div>
+          <div class="dc-score" id="db-spirit">—</div>
+          <div class="dc-bar"><div class="dc-fill" id="bar-spirit" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Meilleure heure du jour -->
+      <div class="section-title">✦ Meilleure heure aujourd'hui</div>
+      <div class="best-hour-card">
+        <div class="bh-glyph">⭐</div>
+        <div>
+          <div class="bh-time cinzel" id="db-best-hour">—</div>
+          <div class="bh-planet" id="db-best-planet">—</div>
+          <div class="bh-activity" id="db-best-activity">—</div>
+        </div>
+      </div>
+
+      <!-- Prochaine heure -->
+      <div class="section-title">⏰ Prochaine heure favorable</div>
+      <div class="next-hour-card">
+        <span style="font-size:18px">🔔</span>
+        <div>
+          <div style="font-size:13px;font-weight:400" id="db-next-hour">—</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px" id="db-next-score">—</div>
+        </div>
+      </div>
+
+      <!-- Lune -->
+      <div class="section-title">☽ Lune du jour</div>
+      <div class="moon-card" id="db-moon">—</div>
+
+      <div style="height:20px"></div>
+    </div><!-- /dashboard -->
+
+    <!-- HEURES FAVORABLES -->
+    <div id="view-hours" class="view">
+      <div class="hours-header">
+        <div class="section-title" style="margin:0;border:none;padding:0">✦ Heures planétaires</div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterHours(null,this)">Toutes</button>
+        <button class="filter-btn" onclick="filterHours('day',this)">☀ Jour</button>
+        <button class="filter-btn" onclick="filterHours('top',this)">⭐ Score 70+</button>
+      </div>
+      <div id="hours-list">
+        <div class="empty-state">Chargement des heures…</div>
+      </div>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div id="view-history" class="view">
+      <div class="section-title">✦ Mes activités & expériences</div>
+      <div id="history-list">
+        <div class="empty-state">✦ Aucune activité.<br>Notez vos heures pour affiner vos prédictions.</div>
+      </div>
+    </div>
+
+    <!-- PROFIL -->
+    <div id="view-profile" class="view">
+      <div class="section-title">✦ Mon profil astral</div>
+
+      <div class="profile-section">
+        <div class="pf-title">Données de naissance</div>
+        <div class="pf-field">
+          <label>Prénom</label>
+          <input type="text" id="pf-name">
+        </div>
+        <div class="pf-field">
+          <label>Date de naissance</label>
+          <input type="date" id="pf-birthdate">
+        </div>
+        <div class="pf-field">
+          <label>Heure de naissance</label>
+          <input type="time" id="pf-birthtime">
+        </div>
+        <div class="pf-field">
+          <label>Ville</label>
+          <input type="text" id="pf-city" placeholder="Antananarivo, Paris…">
+        </div>
+        <div class="pf-sign cinzel" id="pf-sign"></div>
+      </div>
+
+      <button class="pf-btn cinzel" onclick="saveProfile()">✦ SAUVEGARDER</button>
+
+      <button class="pf-btn-notif" id="notif-btn" onclick="requestNotifications()">
+        🔔 Activer les notifications push
+      </button>
+
+      <div class="profile-section">
+        <div class="pf-title">Statistiques personnelles</div>
+        <div id="pf-stats"></div>
+      </div>
+
+      <div style="height:20px"></div>
+    </div>
+
+  </div><!-- /views-container -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-view="dashboard">
+      <span class="nav-icon">🏠</span>
+      <span>Accueil</span>
+    </button>
+    <button class="nav-btn" data-view="hours">
+      <span class="nav-icon">⏱</span>
+      <span>Heures</span>
+    </button>
+    <button class="nav-btn" data-view="history">
+      <span class="nav-icon">📜</span>
+      <span>Journal</span>
+    </button>
+    <button class="nav-btn" data-view="profile">
+      <span class="nav-icon">☽</span>
+      <span>Profil</span>
+    </button>
+  </nav>
+
+</div><!-- /main-app -->
+
+<!-- Rating Modal -->
+<div id="rating-modal">
+  <div class="rm-card">
+    <div class="rm-title cinzel">Notez cette heure</div>
+    <div class="rm-stars">
+      <span class="rm-star">☆</span>
+      <span class="rm-star">☆</span>
+      <span class="rm-star">☆</span>
+      <span class="rm-star">☆</span>
+      <span class="rm-star">☆</span>
+    </div>
+    <div class="rm-labels">
+      <span>Très mauvais</span>
+      <span>Excellent</span>
+    </div>
+    <textarea class="rm-note" placeholder="Note personnelle (optionnel)…"></textarea>
+    <div class="rm-actions">
+      <button class="rm-btn-close">Annuler</button>
+      <button class="rm-btn-save cinzel">✦ ENREGISTRER</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="js/db.js"></script>
+<script src="js/astro.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
